@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceFlow Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-dim: #777;
+            --accent: #3498db;
+            --secondary: #27ae60;
+            --danger: #e74c3c;
+            --border: #d1d1d1;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --card-bg: #1e1e1e;
+                --text-main: #e0e0e0;
+                --text-dim: #888;
+                --border: #333;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container { width: 100%; max-width: 900px; padding-bottom: 60px; }
+        
+        /* Dashboards */
+        .section-title { font-size: 0.75rem; font-weight: bold; margin: 20px 0 10px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
+        .dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        @media (min-width: 600px) { .dashboard { grid-template-columns: repeat(4, 1fr); } }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card h3 { margin: 0; font-size: 0.6rem; text-transform: uppercase; color: var(--text-dim); }
+        .stat-card p { margin: 8px 0 0; font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            height: 280px;
+            border: 1px solid var(--border);
+        }
+
+        /* Forms */
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
+        @media (min-width: 700px) { .form-grid { grid-template-columns: 1.5fr 1fr; } }
+
+        .panel { background: var(--card-bg); padding: 18px; border-radius: 12px; border: 1px solid var(--border); }
+        .input-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+        label { font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; }
+        
+        input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .btn-add { 
+            background: var(--accent); 
+            color: white; border: none; 
+            padding: 14px; border-radius: 8px; 
+            font-weight: bold; cursor: pointer; 
+            width: 100%; font-size: 1rem;
+        }
+
+        /* Subtle Action Buttons */
+        .utility-row { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-subtle {
+            flex: 1;
+            padding: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            transition: all 0.2s;
+        }
+        .btn-subtle:hover { border-color: var(--text-main); color: var(--text-main); }
+        .btn-subtle.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* Table */
+        .table-wrapper { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { background: rgba(0,0,0,0.02); color: var(--text-dim); }
+        .btn-del { color: var(--text-dim); background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .btn-del:hover { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="padding: 10px 0;">
+        <h1 style="margin:0; font-size: 1.4rem;">FinanceFlow <span style="font-weight:200">PRO</span></h1>
+    </header>
+
+    <div class="section-title" id="title-month">Monthly Breakdown</div>
+    <div class="dashboard">
+        <div class="stat-card"><h3>Total</h3><p id="m-total">$0.00</p></div>
+        <div class="stat-card"><h3>Weekly</h3><p id="m-weekly">$0.00</p></div>
+        <div class="stat-card"><h3>Daily</h3><p id="m-daily">$0.00</p></div>
+        <div class="stat-card"><h3>Hourly</h3><p id="m-hourly">$0.00</p></div>
+    </div>
+
+    <div class="section-title" id="title-year">Annual Breakdown</div>
+    <div class="dashboard">
+        <div class="stat-card"><h3>Total</h3><p id="y-total">$0.00</p></div>
+        <div class="stat-card"><h3>Weekly</h3><p id="y-weekly">$0.00</p></div>
+        <div class="stat-card"><h3>Daily</h3><p id="y-daily">$0.00</p></div>
+        <div class="stat-card"><h3>Hourly</h3><p id="y-hourly">$0.00</p></div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="incomeChart"></canvas>
+    </div>
+
+    <div class="form-grid">
+        <div class="panel">
+            <h2 style="margin-top:0; font-size: 1rem; color: var(--accent);">Add Entry</h2>
+            <div class="input-group">
+                <label>Investment Name</label>
+                <input type="text" id="name" list="prev-investments" placeholder="Type or select...">
+                <datalist id="prev-investments"></datalist>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="input-group" style="flex: 1;"><label>Amount ($)</label><input type="number" id="amount" step="0.01" inputmode="decimal"></div>
+                <div class="input-group" style="flex: 1;"><label>Date</label><input type="date" id="date"></div>
+            </div>
+            <button class="btn-add" onclick="addEntry()">Save Entry</button>
+        </div>
+
+        <div class="panel">
+            <h2 style="margin-top:0; font-size: 1rem;">Settings & Filter</h2>
+            <div class="input-group">
+                <label>View Month</label>
+                <input type="month" id="filter-month" onchange="render()">
+            </div>
+            
+            <div class="utility-row">
+                <button class="btn-subtle" onclick="exportCSV()">Export CSV</button>
+                <button class="btn-subtle danger" onclick="clearData()">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>Date</th><th>Source</th><th>Amount</th><th></th></tr></thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let entries = JSON.parse(localStorage.getItem('finance_master_v5')) || [];
+    let incomeChart;
+
+    const filterEl = document.getElementById('filter-month');
+    const now = new Date();
+    filterEl.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('date').valueAsDate = new Date();
+
+    function addEntry() {
+        const nameEl = document.getElementById('name'), amountEl = document.getElementById('amount'), dateEl = document.getElementById('date');
+        const name = nameEl.value.trim(), amount = parseFloat(amountEl.value), date = dateEl.value;
+
+        if (!name || isNaN(amount) || !date) {
+            [nameEl, amountEl, dateEl].forEach(el => el.style.borderColor = el.value ? 'var(--border)' : 'var(--danger)');
+            return;
+        }
+
+        entries.push({ id: Date.now(), name, amount, date });
+        localStorage.setItem('finance_master_v5', JSON.stringify(entries));
+        amountEl.value = '';
+        render();
+    }
+
+    function deleteEntry(id) {
+        if(confirm("Delete this entry?")) {
+            entries = entries.filter(e => e.id !== id);
+            localStorage.setItem('finance_master_v5', JSON.stringify(entries));
+            render();
+        }
+    }
+
+    function exportCSV() {
+        let csv = "Date,Source,Amount\n";
+        entries.forEach(e => csv += `${e.date},${e.name},${e.amount}\n`);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'finance_data.csv'; a.click();
+    }
+
+    function clearData() {
+        if(confirm("Permanently delete all records?")) {
+            localStorage.removeItem('finance_master_v5');
+            entries = [];
+            render();
+        }
+    }
+
+    function render() {
+        const filterMonth = filterEl.value;
+        const [year, month] = filterMonth.split('-');
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        // Table filtering
+        const filtered = entries.filter(e => e.date.startsWith(filterMonth)).sort((a,b) => new Date(b.date) - new Date(a.date));
+        filtered.forEach(e => {
+            tbody.insertAdjacentHTML('beforeend', `<tr><td>${e.date.split('-').slice(1).join('/')}</td><td>${e.name}</td><td>$${e.amount.toFixed(2)}</td><td><button class="btn-del" onclick="deleteEntry(${e.id})">✕</button></td></tr>`);
+        });
+
+        // Dropdown update
+        const uniqueNames = [...new Set(entries.map(e => e.
