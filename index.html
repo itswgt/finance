@@ -210,20 +210,21 @@
         /* toast */
         #toast {
             position: fixed;
-            bottom: 24px;
+            bottom: 100px;
             left: 50%;
-            transform: translateX(-50%) translateY(60px);
+            transform: translateX(-50%) translateY(180px);
+            opacity: 0;
             background: var(--secondary);
             color: #fff;
             padding: 10px 22px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             pointer-events: none;
             z-index: 999;
         }
-        #toast.show { transform: translateX(-50%) translateY(0); }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
