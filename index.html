@@ -342,9 +342,15 @@
         entries.push({ id: Date.now(), name, amount, date });
         localStorage.setItem('finance_master_v5', JSON.stringify(entries));
 
-        // Reset only amount, keep name + date for quick multi-entry
+        // Clear name + amount, keep date
+        nameEl.value   = '';
         amountEl.value = '';
-        amountEl.focus();
+
+        // Dismiss keyboard on mobile by blurring all inputs
+        nameEl.blur();
+        amountEl.blur();
+        dateEl.blur();
+        document.activeElement?.blur();
 
         showToast();
         render();
